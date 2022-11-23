@@ -1,0 +1,24 @@
+Menu
+Leer texto por teclado:
+	parametros: Scanner
+	return: String
+Leer numero por teclado
+	parametros: Scanner
+	return: int
+Leer fichero CSV 
+	return: Graph
+Leer Relacion
+	parametros: String
+	return Personaje
+Guardar elementos en un grafo
+Mostar elemento con más relaciones
+Mostar elemento con menos relaciones
+
+Hacer camino(más corto) entre dos elementos
+Uso del BFS
+	Parametros: grafo, Vértice1, Vértice2
+	return(opcional): lista de vertices
+Hacer equipo con vertices de menor peso(menores que 10)
+Uso del DFS
+	Parametros: grafo, Vértice1, Vértice2
+	return(opcional): lista de vertices
