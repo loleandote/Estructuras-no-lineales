@@ -1,13 +1,12 @@
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
-import Grafo.Graph;
-import Grafo.TreeMapGraph;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import Grafo.*;
 
 public class Principal {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
-        Menu(sc,null);
+        Menu(sc, null);
         sc.close();
     }
 
@@ -24,65 +23,102 @@ public class Principal {
      * 
      * @param sc Objeto de escáner
      */
-    private static void Menu(Scanner sc,Graph g) {
-        System.out.println("1. Cargar datos\n2. Conexión entre dos personajes\n3. Formar equipo entre dos personajes\n4. Salir");
+    private static void Menu(Scanner sc, Graph<Personaje, Integer> g) {
+        System.out.println(
+                "1. Cargar datos\n2. Conexión entre dos personajes\n3. Formar equipo entre dos personajes\n4. Salir");
         System.out.println("Introduce una opcion:");
         try {
             int opcion = sc.nextInt();
             switch (opcion) {
                 case 1:
-                    System.out.println(opcion);
-                    Graph grafo=Cargar();
-                    Menu(sc,grafo);
+                    Menu(sc, Cargar());
                     break;
                 case 2:
                     System.out.println(opcion);
-                    
-                    Menu(sc,g);
+                    Menu(sc, g);
                     break;
                 case 3:
                     System.out.println(opcion);
-                    
-                    Menu(sc,g);
+
+                    Menu(sc, g);
                     break;
                 case 4:
                     break;
                 default:
                     System.out.println("Opcion no valida: " + opcion);
-                    Menu(sc,g);
+                    Menu(sc, g);
             }
         } catch (InputMismatchException e) {
             System.err.println(e);
             sc.next();
-            Menu(sc,g);
+            Menu(sc, g);
         }
     }
 
-    private static Graph Cargar() {
-        Graph g = new TreeMapGraph<>();
+    /**
+     * Crea un nuevo gráfico, imprime el número de vértices y aristas, y luego devuelve el gráfico
+     * 
+     * @return Un gráfico con los vértices y las aristas del gráfico.
+     */
+    private static Graph<Personaje, Integer> Cargar() {
+        Graph<Personaje, Integer> g = new TreeMapGraph<>();
+        System.out.println("Nodos: "+iterableToList(g.getVertices()).size());
+        System.out.println("Aristas: "+iterableToList2(g.getEdges()).size());
         mostarMayor(g);
         mostarMenor(g);
         return g;
     }
 
     /**
-     * > Esta función toma un gráfico como entrada e imprime el nombre del nodo con
+     * > Esta función toma un gráfico como entrada e imprime el nombre del Personaje con
      * más conexiones
      * 
      * @param g El gráfo a analizar.
      */
-    private static void mostarMayor(Graph g) {
-
+    @SuppressWarnings("unchecked")
+    private static void mostarMayor(Graph<Personaje, Integer> g) {
+        List<Vertex<Personaje>> actualList = iterableToList(g.getVertices());
+        try {
+            Vertex<Personaje> c = Collections.max(actualList, (((a,b) ->
+                    (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size()))));
+            System.out.println("El personaje mas socialble es:\n" + c.getElement().toString());
+            actualList.forEach((a) -> {
+                if (((Collection<Edge<Integer>>) g.incidentEdges(a)).size() ==
+                    ((Collection<Edge<Integer>>) g.incidentEdges(c)).size())
+                    System.out.println(a.getElement().toString());
+                else
+                    return;
+            });
+        } catch (NoSuchElementException e) {
+            System.out.println("NO hay elementos en el grafo");
+        }
     }
 
     /**
-     * > Esta función toma un gráfico e imprime el nombre del vértice con el menor
+     * > Esta función toma un gráfico e imprime el nombre del Personaje con el menor
      * número de conexiones
      * 
      * @param g El grafo en el que se busca.
      */
-    private static void mostarMenor(Graph g) {
-
+    @SuppressWarnings("unchecked")
+    private static void mostarMenor(Graph<Personaje, Integer> g) {
+        Iterable<Vertex<Personaje>> iterable = () -> g.getVertices();
+        List<Vertex<Personaje>> actualList = StreamSupport.stream((iterable).spliterator(), false)
+                .collect(Collectors.toList());
+        try {
+            Vertex<Personaje> c = Collections.min(actualList, ((a,b) ->
+                    (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size())));
+            System.out.println("El personaje menos socialble es:\n" + c.getElement().toString());
+            actualList.forEach((a) -> {
+                if (((Collection<Edge<Integer>>) g.incidentEdges(a)).size() ==
+                    ((Collection<Edge<Integer>>) g.incidentEdges(c)).size())
+                    System.out.println(a.getElement().toString());
+                else
+                    return;
+            });
+        } catch (NoSuchElementException e) {
+            System.out.println("NO hay elementos en el grafo");
+        }
     }
 
     /**
@@ -108,7 +144,23 @@ public class Principal {
      * @param sc
      */
     private static void diseñarEquipo(Graph grafo, Scanner sc) {
+    }
 
+    // #region auxiliar
+
+    private static List<Vertex<Personaje>> iterableToList(Iterator<Vertex<Personaje>> iterator) {
+        List<Vertex<Personaje>> list = new ArrayList<>();
+        while (iterator.hasNext())
+            list.add(iterator.next());
+        return list;
+    }
+
+    private static List<Edge<Integer>> iterableToList2(Iterator<Edge<Integer>> iterator) {
+        List<Edge<Integer>> list = new ArrayList<>();
+        while (iterator.hasNext()) {
+            list.add(iterator.next());
+        }
+        return list;
     }
 
     /**
@@ -123,4 +175,6 @@ public class Principal {
         System.out.println(mensaje);
         return sc.nextLine();
     }
+
+    // #endregion
 }
