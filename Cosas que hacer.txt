@@ -1,24 +1,24 @@
 Menu
-Leer texto por teclado:
+Leer texto por teclado:(alfonso)
 	parametros: Scanner
 	return: String
-Leer numero por teclado
+Leer numero por teclado(alfonso)
 	parametros: Scanner
 	return: int
-Leer fichero CSV 
+Leer fichero CSV (gustavo)
 	return: Graph
-Leer Relacion
+Leer Relacion (GUSTAVO)
 	parametros: String
 	return Personaje
-Guardar elementos en un grafo
-Mostar elemento con más relaciones
-Mostar elemento con menos relaciones
+Guardar elementos en un grafo(amparo)
+Mostar elemento con más relaciones(alfonso)
+Mostar elemento con menos relaciones(alfonso)
 
-Hacer camino(más corto) entre dos elementos
-Uso del BFS
+Hacer camino(más corto) entre dos elementos(SARA)
+Uso del BFS (sara)
 	Parametros: grafo, Vértice1, Vértice2
 	return(opcional): lista de vertices
-Hacer equipo con vertices de menor peso(menores que 10)
+Hacer equipo con vertices de menor peso(menores que 10)(amparo)
 Uso del DFS
 	Parametros: grafo, Vértice1, Vértice2
 	return(opcional): lista de vertices
