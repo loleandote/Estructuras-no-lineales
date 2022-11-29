@@ -5,17 +5,17 @@ Leer texto por teclado:(alfonso)
 Leer numero por teclado(alfonso)
 	parametros: Scanner
 	return: int
-Leer fichero CSV (gustavo)
+Leer  (gustavo)
 	return: Graph
-Leer Relacion (GUSTAVO)
-	parametros: String
-	return Personaje
-Guardar elementos en un grafo(amparo)
+Leer fichero CSV Relacion (GUSTAVO)
+	iterar el fichero de relaciones separando las lineas Personaje1, Personaje2, PesoDeRelacion 
+	insertar el resultado de cada iteracion en el grafo
+	return Grafo (con personajes)
 Mostar elemento con más relaciones(alfonso)
 Mostar elemento con menos relaciones(alfonso)
 
 Hacer camino(más corto) entre dos elementos(SARA)
-Uso del BFS (sara)
+Uso del BFS
 	Parametros: grafo, Vértice1, Vértice2
 	return(opcional): lista de vertices
 Hacer equipo con vertices de menor peso(menores que 10)(amparo)
