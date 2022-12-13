@@ -5,6 +5,16 @@ import Grafo.*;
 
 public class Principal {
     public static void main(String[] args) throws Exception {
+<<<<<<< Updated upstream
+=======
+        
+        // Cargando los datos del archivo e imprimiendo el ID de cada vértice.
+        /*Graph<Personaje,Integer> ge=cargarDatosPruebas();
+        mostarMayor(ge);
+        mostarMenor(ge);*/
+        //ge.getVertices().forEachRemaining(v->System.out.println((((Vertex<Personaje>)v).getElement()).getID()));
+        Graph<Personaje,Integer> g=Cargar();
+>>>>>>> Stashed changes
         Scanner sc = new Scanner(System.in);
         Menu(sc, null);
         sc.close();
@@ -80,8 +90,13 @@ public class Principal {
         List<Vertex<Personaje>> actualList = iterableToList(g.getVertices());
         try {
             Vertex<Personaje> c = Collections.max(actualList, (((a,b) ->
+<<<<<<< Updated upstream
                     (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size()))));
             System.out.println("El personaje mas socialble es:\n" + c.getElement().toString());
+=======
+                    (iterableToList2(g.incidentEdges(a)).size() - iterableToList2(g.incidentEdges(b)).size()))));
+            System.out.println("El personaje mas sociable es:");
+>>>>>>> Stashed changes
             actualList.forEach((a) -> {
                 if (((Collection<Edge<Integer>>) g.incidentEdges(a)).size() ==
                     ((Collection<Edge<Integer>>) g.incidentEdges(c)).size())
@@ -107,8 +122,13 @@ public class Principal {
                 .collect(Collectors.toList());
         try {
             Vertex<Personaje> c = Collections.min(actualList, ((a,b) ->
+<<<<<<< Updated upstream
                     (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size())));
             System.out.println("El personaje menos socialble es:\n" + c.getElement().toString());
+=======
+                    iterableToList2(g.incidentEdges(a)).size() - iterableToList2(g.incidentEdges(b)).size()));
+            System.out.println("El personaje menos sociable es:");
+>>>>>>> Stashed changes
             actualList.forEach((a) -> {
                 if (((Collection<Edge<Integer>>) g.incidentEdges(a)).size() ==
                     ((Collection<Edge<Integer>>) g.incidentEdges(c)).size())
@@ -128,7 +148,7 @@ public class Principal {
      * @param grafo
      * @param sc
      */
-    private static void Camino(Graph grafo, Scanner sc) {
+    private static void Camino(Graph<Personaje,Integer> grafo, Scanner sc) {
 
     }
 
@@ -143,7 +163,7 @@ public class Principal {
      * @param grafo
      * @param sc
      */
-    private static void diseñarEquipo(Graph grafo, Scanner sc) {
+    private static void diseñarEquipo(Graph<Personaje,Integer> grafo, Scanner sc) {
     }
 
     // #region auxiliar
