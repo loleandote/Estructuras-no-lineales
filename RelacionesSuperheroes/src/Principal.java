@@ -6,9 +6,9 @@ public class Principal {
     public static void main(String[] args) throws Exception {
         
         // Cargando los datos del archivo e imprimiendo el ID de cada vértice.
-        Graph<Personaje,Integer> ge=cargarDatosPruebas();
+       /* Graph<Personaje,Integer> ge=cargarDatosPruebas();
         mostarMayor(ge);
-        mostarMenor(ge);
+        mostarMenor(ge);*/
         //ge.getVertices().forEachRemaining(v->System.out.println((((Vertex<Personaje>)v).getElement()).getID()));
         Graph<Personaje,Integer> g=Cargar();
         Scanner sc = new Scanner(System.in);
