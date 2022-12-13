@@ -2,16 +2,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import Grafo.*;
-import Pruebas.PersonajePrueba;
-import Pruebas.Pruebas;
 public class Principal {
     public static void main(String[] args) throws Exception {
         
         // Cargando los datos del archivo e imprimiendo el ID de cada vértice.
-        /*Graph g=Pruebas.cargarDatosPruebas();
-        g.getVertices().forEachRemaining(v->System.out.println((((Vertex<PersonajePrueba>)v).getElement()).getID()));*/
+        Graph<Personaje,Integer> ge=cargarDatosPruebas();
+        mostarMayor(ge);
+        mostarMenor(ge);
+        //ge.getVertices().forEachRemaining(v->System.out.println((((Vertex<Personaje>)v).getElement()).getID()));
+        Graph<Personaje,Integer> g=Cargar();
         Scanner sc = new Scanner(System.in);
-        Menu(sc, null);
+        Menu(sc, g);
         sc.close();
     }
 
@@ -30,13 +31,14 @@ public class Principal {
      */
     private static void Menu(Scanner sc, Graph<Personaje, Integer> g) {
         System.out.println(
-                "1. Cargar datos\n2. Conexión entre dos personajes\n3. Formar equipo entre dos personajes\n4. Salir");
+                "1. Mostrar datos(Modificar texto opcion)\n2. Conexión entre dos personajes\n3. Formar equipo entre dos personajes\n4. Salir");
         System.out.println("Introduce una opcion:");
         try {
             int opcion = sc.nextInt();
             switch (opcion) {
                 case 1:
-                    Menu(sc, Cargar());
+                    MostrarDatos(g);
+                    Menu(sc, g);
                     break;
                 case 2:
                     System.out.println(opcion);
@@ -67,11 +69,15 @@ public class Principal {
      */
     private static Graph<Personaje, Integer> Cargar() {
         Graph<Personaje, Integer> g = new TreeMapGraph<>();
-        System.out.println("Nodos: "+iterableToList(g.getVertices()).size());
-        System.out.println("Aristas: "+iterableToList2(g.getEdges()).size());
+        
+        return g;
+    }
+
+    private static void MostrarDatos(Graph<Personaje, Integer> g){
+        System.out.println("Numero de personajes:"+g.getN());
+        System.out.println("Numeros de relaciones:"+g.getM());
         mostarMayor(g);
         mostarMenor(g);
-        return g;
     }
 
     /**
@@ -80,17 +86,16 @@ public class Principal {
      * 
      * @param g El gráfo a analizar.
      */
-    @SuppressWarnings("unchecked")
     private static void mostarMayor(Graph<Personaje, Integer> g) {
         List<Vertex<Personaje>> actualList = iterableToList(g.getVertices());
         try {
             Vertex<Personaje> c = Collections.max(actualList, (((a,b) ->
-                    (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size()))));
-            System.out.println("El personaje mas socialble es:\n" + c.getElement().toString());
+                    (iterableToList2(g.incidentEdges(a)).size() - iterableToList2(g.incidentEdges(b)).size()))));
+            System.out.println("El personaje mas socialble es:");
             actualList.forEach((a) -> {
-                if (((Collection<Edge<Integer>>) g.incidentEdges(a)).size() ==
-                    ((Collection<Edge<Integer>>) g.incidentEdges(c)).size())
-                    System.out.println(a.getElement().toString());
+                if (iterableToList2(g.incidentEdges(a)).size() ==
+                iterableToList2(g.incidentEdges(c)).size())
+                    System.out.println(a.getElement().getID());
                 else
                     return;
             });
@@ -98,26 +103,24 @@ public class Principal {
             System.out.println("NO hay elementos en el grafo");
         }
     }
-
     /**
      * > Esta función toma un gráfico e imprime el nombre del Personaje con el menor
      * número de conexiones
      * 
      * @param g El grafo en el que se busca.
      */
-    @SuppressWarnings("unchecked")
     private static void mostarMenor(Graph<Personaje, Integer> g) {
         Iterable<Vertex<Personaje>> iterable = () -> g.getVertices();
         List<Vertex<Personaje>> actualList = StreamSupport.stream((iterable).spliterator(), false)
                 .collect(Collectors.toList());
         try {
             Vertex<Personaje> c = Collections.min(actualList, ((a,b) ->
-                    (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size())));
-            System.out.println("El personaje menos socialble es:\n" + c.getElement().toString());
+                    iterableToList2(g.incidentEdges(a)).size() - iterableToList2(g.incidentEdges(b)).size()));
+            System.out.println("El personaje menos socialble es:");
             actualList.forEach((a) -> {
-                if (((Collection<Edge<Integer>>) g.incidentEdges(a)).size() ==
-                    ((Collection<Edge<Integer>>) g.incidentEdges(c)).size())
-                    System.out.println(a.getElement().toString());
+                if (iterableToList2(g.incidentEdges(a)).size() ==
+                iterableToList2(g.incidentEdges(c)).size())
+                    System.out.println(a.getElement().getID());
                 else
                     return;
             });
@@ -182,4 +185,24 @@ public class Principal {
     }
 
     // #endregion
+
+    //#region pruebas
+    private static Graph<Personaje,Integer> cargarDatosPruebas (){
+        Graph<Personaje,Integer> grafo =new TreeMapGraph<Personaje,Integer>();
+        Personaje[]personajes= new Personaje[10];
+        for(int i=0;i<10;i++)
+            personajes[i]=new Personaje(""+(char)('a'+i));
+        grafo.insertEdge(personajes[0],personajes[1], 2);
+        grafo.insertEdge(personajes[0],personajes[2], 8);
+        grafo.insertEdge(personajes[0],personajes[3], 24);
+        grafo.insertEdge(personajes[0],personajes[4], 12);
+        grafo.insertEdge(personajes[2],personajes[5], 6);
+        grafo.insertEdge(personajes[4],personajes[5], 4);
+        grafo.insertEdge(personajes[5],personajes[6], 3);
+        grafo.insertEdge(personajes[6],personajes[7], 5);
+        grafo.insertEdge(personajes[6],personajes[8], 35);
+        grafo.insertEdge(personajes[8],personajes[9], 7);
+        return grafo;
+    }
+//#endregion
 }
