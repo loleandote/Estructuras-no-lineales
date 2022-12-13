@@ -2,9 +2,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import Grafo.*;
-
+import Pruebas.PersonajePrueba;
+import Pruebas.Pruebas;
 public class Principal {
     public static void main(String[] args) throws Exception {
+        
+        // Cargando los datos del archivo e imprimiendo el ID de cada vértice.
+        /*Graph g=Pruebas.cargarDatosPruebas();
+        g.getVertices().forEachRemaining(v->System.out.println((((Vertex<PersonajePrueba>)v).getElement()).getID()));*/
         Scanner sc = new Scanner(System.in);
         Menu(sc, null);
         sc.close();
