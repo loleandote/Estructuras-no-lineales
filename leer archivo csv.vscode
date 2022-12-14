@@ -7,7 +7,7 @@ public class Principal {
 	private static TreeMapGraph<DecoratedElement<Personaje<String>>, Interaccion<Integer>> t = new TreeMapGraph();
 	
 	/**
-	 * Leer fichero. This method read the file and creates a graph with the names as vertex and the weight.
+	 * Leer fichero. Este método lee el archivo y crea un gráfico con los nombres como vértice y el peso.
 	 */
 	public static void leerFichero() {
 		String linea;
