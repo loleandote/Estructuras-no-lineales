@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -206,3 +207,44 @@ public class Principal {
     }
 //#endregion
 }
+     private static TreeMapGraph<DecoratedElement<Personaje<String>>, Interaccion<Integer>> t = new TreeMapGraph();
+	
+	/**
+	 * Leer fichero. Este método lee el archivo y crea un gráfico con los nombres como vértice y el peso.
+	 */
+	    public static void leerFichero() {
+		String linea;
+		boolean seguir = true;
+		Scanner entrada = null;
+		Personaje p1;
+		Personaje p2;
+		Interaccion i1;
+		
+		try {
+			entrada = new Scanner(new FileReader("marvel-unimodal-edges.csv"));
+		} catch(FileNotFoundException fne) {
+			System.out.println("No se ha podido leer el archivo");
+			seguir = false;
+		}
+		
+		entrada.nextLine(); // Salta la primera línea
+		if(seguir) {
+			while(entrada.hasNextLine()) {
+				linea = entrada.nextLine();
+				StringTokenizer to = new StringTokenizer(linea, ",");
+				p1 = new Personaje<String>(to.nextToken());
+				p2 = new Personaje<String>(to.nextToken());
+				i1 = new Interaccion<Integer>(p1.getID()+"_"+p2.getID(), Integer.parseInt(to.nextToken()));
+				DecoratedElement<Personaje<String>> d1 = new DecoratedElement<Personaje<String>>(p1.getID(), p1);
+				DecoratedElement<Personaje<String>> d2 = new DecoratedElement<Personaje<String>>(p2.getID(), p2);
+				
+				t.insertEdge(d1, d2, i1);
+				
+				if(to.hasMoreTokens())
+					to.nextToken();
+				
+			}
+			entrada.close();
+		}
+		
+	}
