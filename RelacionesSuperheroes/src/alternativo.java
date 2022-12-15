@@ -1,13 +1,13 @@
 import java.util.*;
 import Grafo.*;
 public class alternativo {
-    private static void mostarMayorAlt(Graph<Personaje, Integer> g) {
-        List<Vertex<Personaje>> actualList = iterableToList(g.getVertices());
+    private static void mostarMayorAlt(Graph<Dato, Integer> g) {
+        List<Vertex<Dato>> actualList = iterableToList(g.getVertices());
         try {
             Collections.sort(actualList, (((a,b) ->
                     (iterableToList2(g.incidentEdges(b)).size() - iterableToList2(g.incidentEdges(a)).size()))));
             System.out.println("El personaje mas sociable es:");
-            Vertex<Personaje>c= actualList.get(0);
+            Vertex<Dato>c= actualList.get(0);
             actualList.forEach((a) -> {
                 if (iterableToList2(g.incidentEdges(a)).size() ==
                 iterableToList2(g.incidentEdges(c)).size())
@@ -19,13 +19,13 @@ public class alternativo {
             System.out.println("NO hay elementos en el grafo");
         }
     }
-    private static void mostarMenorAlt(Graph<Personaje, Integer> g) {
-        List<Vertex<Personaje>> actualList = iterableToList(g.getVertices());
+    private static void mostarMenorAlt(Graph<Dato, Integer> g) {
+        List<Vertex<Dato>> actualList = iterableToList(g.getVertices());
         try {
             Collections.sort(actualList, (((a,b) ->
                     (iterableToList2(g.incidentEdges(a)).size() - iterableToList2(g.incidentEdges(b)).size()))));
             System.out.println("El personaje mas sociable es:");
-            Vertex<Personaje>c= actualList.get(0);
+            Vertex<Dato>c= actualList.get(0);
             actualList.forEach((a) -> {
                 if (iterableToList2(g.incidentEdges(a)).size() ==
                 iterableToList2(g.incidentEdges(c)).size())
@@ -37,8 +37,8 @@ public class alternativo {
             System.out.println("NO hay elementos en el grafo");
         }
     }
-    private static List<Vertex<Personaje>> iterableToList(Iterator<Vertex<Personaje>> iterator) {
-        List<Vertex<Personaje>> list = new ArrayList<>();
+    private static List<Vertex<Dato>> iterableToList(Iterator<Vertex<Dato>> iterator) {
+        List<Vertex<Dato>> list = new ArrayList<>();
         while (iterator.hasNext())
             list.add(iterator.next());
         return list;
