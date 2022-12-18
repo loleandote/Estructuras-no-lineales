@@ -204,14 +204,10 @@ public class Principal {
         LinkedList<Vertex<Personaje>> queue = new LinkedList<Vertex<Personaje>>();
         List<Vertex<Personaje>> verticesTotales = iterableToList(graph.getVertices());
         Personaje[] camino = new Personaje[graph.getN()];
-        Personaje ultimo = inicio.getElement();
-        int[] distancias = new int[graph.getN()];
-        int distancia = 0;
         for (int i = 0; i < camino.length; i++)
             camino[i] = null;
         queue.add(inicio);
         boolean acabar = false;
-        distancias[verticesTotales.indexOf(inicio)] = 0;
         do {
             Vertex<Personaje> v = queue.poll();
             Iterator<Edge<Integer>> vertices = graph.incidentEdges(v);
@@ -221,10 +217,6 @@ public class Principal {
                     acabar = adVertex.equals(fin);
                     if (camino[verticesTotales.indexOf(adVertex)] == null) {
                         queue.add(adVertex);
-                        ultimo = adVertex.getElement();
-                        distancias[verticesTotales
-                                .indexOf(adVertex)] = distancias[verticesTotales.indexOf(v)] + 1;
-                        distancia = distancias[verticesTotales.indexOf(v)] + 1;
                         camino[verticesTotales.indexOf(adVertex)] = v.getElement();
                     }
                 } catch (NullPointerException e) {
@@ -232,11 +224,10 @@ public class Principal {
             }
         } while (camino[verticesTotales.indexOf(fin)] == null && !queue.isEmpty() && !acabar);
         if (acabar) {
-            System.out.printf("El camino más corto con una distacia de %d es:\n", distancia);
-            recorreCamino(graph, camino, inicio.getElement(), ultimo);
+            recorreCamino(graph,1, camino, inicio.getElement(), fin.getElement());
             System.out.println(fin.getID());
         } else
-            System.out.println("no se pudo el ultimo personaje visitado es " + ultimo.getID());
+            System.out.println("no se pudo encontrar un camino entre los dos personajes");
     }
 
     /**
@@ -248,15 +239,16 @@ public class Principal {
      * @param primero El primer vértice del camino.
      * @param vertice El vértice al que queremos encontrar el camino más corto.
      */
-    private static void recorreCamino(Graph<Personaje, Integer> graph, Personaje[] camino, Personaje primero,
-            Personaje vertice) {
+    private static void recorreCamino(Graph<Personaje, Integer> graph,int distancia, Personaje[] camino, Personaje primero,
+            Personaje fin) {
 
-        Personaje vertice2 = camino[iterableToList(graph.getVertices())
+        Personaje vertice = camino[iterableToList(graph.getVertices())
                 .indexOf(iterableToList(graph.getVertices()).stream()
-                        .filter(e -> e.getID().equals(vertice.getID())).findFirst().get())];
-        if (!vertice2.getID().equals(primero.getID()))
-            recorreCamino(graph, camino, primero, vertice2);
-        System.out.print(vertice2.getID() + " ");
+                        .filter(e -> e.getID().equals(fin.getID())).findFirst().get())];
+        if (!vertice.getID().equals(primero.getID()))
+            recorreCamino(graph,distancia+1, camino, primero, vertice);
+        else  System.out.printf("El camino más corto con una distacia de %d es:\n", distancia);
+        System.out.print(vertice.getID() + " ");
     }
 
     /**
@@ -309,7 +301,7 @@ public class Principal {
     private static Graph<Personaje, Integer> cargarDatosPruebas() {
         Graph<Personaje, Integer> grafo = new TreeMapGraph<Personaje, Integer>();
         Personaje[] personajes = new Personaje[10];
-        Personaje pers = new Personaje("l");
+        //Personaje pers = new Personaje("l");
         for (int i = 0; i < 10; i++)
             personajes[i] = new Personaje("" + (char) ('a' + i));
         grafo.insertEdge(personajes[0], personajes[1], 2);
