@@ -6,13 +6,9 @@ import Grafo.*;
 
 public class Principal {
     public static void main(String[] args) throws Exception {
-
         // Cargando los datos del archivo e imprimiendo el ID de cada vértice.
         Graph<Personaje, Integer> ge = cargarDatosPruebas();
-        // Graph<Personaje,Integer> g=Cargar();
-        Scanner sc = new Scanner(System.in);
-        Menu(sc, ge);
-        sc.close();
+        Menu(ge);
     }
 
     /**
@@ -28,49 +24,61 @@ public class Principal {
      * 
      * @param sc Objeto de escáner
      */
-    private static void Menu(Scanner sc, Graph<Personaje, Integer> g) {
+    private static void Menu(Graph<Personaje, Integer> g) {
         System.out.println(
-                "1. Mostrar datos(Modificar texto opcion)\n2. Conexión entre dos personajes\n3. Formar equipo entre dos personajes\n4. Salir");
+                "1. Mostrar datos de los personajes\n2. Conexión entre dos personajes\n3. Formar equipo entre dos personajes\n4. Salir");
         System.out.println("Introduce una opcion:");
+        Scanner sc = new Scanner(System.in);
         try {
             int opcion = sc.nextInt();
+            List<Vertex<Personaje>> vertices = iterableToList(g.getVertices());
             switch (opcion) {
                 case 1:
                     MostrarDatos(g);
-                    Menu(sc, g);
+                    Menu(g);
                     break;
                 case 2:
-                    // System.out.println(opcion);
-                    List<Vertex<Personaje>> vertices = iterableToList(g.getVertices());
                     vertices.forEach(a -> System.out.println(a.getID()));
                     sc = new Scanner(System.in);
                     Vertex<Personaje> inicio = obtenerPersonaje(vertices, sc);
                     Vertex<Personaje> fin = obtenerPersonaje(vertices, sc);
-
                     camino(g, inicio, fin);
-                    Menu(sc, g);
+                    Menu(g);
                     break;
                 case 3:
-                    System.out.println(opcion);
-
-                    Menu(sc, g);
+                    vertices.forEach(a -> System.out.println(a.getID()));
+                    sc = new Scanner(System.in);
+                    inicio = obtenerPersonaje(vertices, sc);
+                    fin = obtenerPersonaje(vertices, sc);
+                    equipoVertices(g, inicio, fin);
+                    if (g.getVertex("h").getElement().getParent() != null) {
+                        recorreCamino(inicio.getElement(), fin.getElement());
+                        System.out.println("");
+                    } else
+                        System.out.println("no se pudo hacer un equipo entre " + inicio.getID() + " y " + fin.getID());
+                    Menu(g);
                     break;
                 case 4:
+                    System.out.println("Hasta la vista");
+                    sc.close();
                     break;
                 default:
                     System.out.println("Opcion no valida: " + opcion);
-                    Menu(sc, g);
             }
         } catch (InputMismatchException e) {
             System.err.println(e);
-            sc.next();
-            Menu(sc, g);
+        } finally {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private static Vertex<Personaje> obtenerPersonaje(List<Vertex<Personaje>> vertices, Scanner sc) {
-        // sc.next();
-        String nombre = leerTexto(sc, "Elige un personaje:");
+        System.out.println("Elige un personaje:");
+        String nombre = sc.nextLine();
         if (nombre.equals("") || vertices.stream().filter(a -> a.getID().equals(nombre)).count() == 0)
             return obtenerPersonaje(vertices, sc);
         else
@@ -202,10 +210,6 @@ public class Principal {
      */
     private static void camino(Graph<Personaje, Integer> graph, Vertex<Personaje> inicio, Vertex<Personaje> fin) {
         LinkedList<Vertex<Personaje>> queue = new LinkedList<Vertex<Personaje>>();
-        List<Vertex<Personaje>> verticesTotales = iterableToList(graph.getVertices());
-        Personaje[] camino = new Personaje[graph.getN()];
-        for (int i = 0; i < camino.length; i++)
-            camino[i] = null;
         queue.add(inicio);
         boolean acabar = false;
         do {
@@ -215,58 +219,71 @@ public class Principal {
                 Vertex<Personaje> adVertex = graph.opposite(v, vertices.next());
                 try {
                     acabar = adVertex.equals(fin);
-                    if (camino[verticesTotales.indexOf(adVertex)] == null) {
+                    if (adVertex.getElement().getParent() == null) {
                         queue.add(adVertex);
-                        camino[verticesTotales.indexOf(adVertex)] = v.getElement();
+                        adVertex.getElement().setParent(v.getElement());
                     }
                 } catch (NullPointerException e) {
                 }
             }
-        } while (camino[verticesTotales.indexOf(fin)] == null && !queue.isEmpty() && !acabar);
+        } while (fin.getElement().getParent() == null && !queue.isEmpty() && !acabar);
         if (acabar) {
-            recorreCamino(graph,1, camino, inicio.getElement(), fin.getElement());
-            System.out.println(fin.getID());
+            recorreCamino(inicio.getElement(), fin.getElement());
+            // System.out.println(fin.getID());
         } else
             System.out.println("no se pudo encontrar un camino entre los dos personajes");
     }
 
     /**
-     * Imprime recursivamente la ruta desde el primer vértice hasta el penúltimo
-     * vértice.
+     * Es una función recursiva que toma un gráfico, un vértice inicial y un vértice
+     * final y devuelve
+     * el vértice inicial
      * 
-     * @param graph   La gráfica
-     * @param camino  La matriz de objetos Personaje que contiene la ruta.
-     * @param primero El primer vértice del camino.
-     * @param vertice El vértice al que queremos encontrar el camino más corto.
+     * @param graph  El gráfico con el que estamos trabajando
+     * @param inicio El vértice inicial
+     * @param fin    El vértice al que queremos llegar
+     * @return El método devuelve el vértice que es el punto inicial del gráfico.
      */
-    private static void recorreCamino(Graph<Personaje, Integer> graph,int distancia, Personaje[] camino, Personaje primero,
-            Personaje fin) {
-
-        Personaje vertice = camino[iterableToList(graph.getVertices())
-                .indexOf(iterableToList(graph.getVertices()).stream()
-                        .filter(e -> e.getID().equals(fin.getID())).findFirst().get())];
-        if (!vertice.getID().equals(primero.getID()))
-            recorreCamino(graph,distancia+1, camino, primero, vertice);
-        else  System.out.printf("El camino más corto con una distacia de %d es:\n", distancia);
-        System.out.print(vertice.getID() + " ");
+    private static Vertex<Personaje> equipoVertices(Graph<Personaje, Integer> graph, Vertex<Personaje> inicio,
+            Vertex<Personaje> fin) {
+        Edge<Integer> e = null;
+        inicio.getElement().setVisited(true);
+        Iterator<Edge<Integer>> it = graph.incidentEdges(inicio);
+        Vertex<Personaje> nodoAux = null;
+        while (it.hasNext() && !(inicio.equals(fin))) {
+            e = it.next();
+            nodoAux = graph.opposite(inicio, e);
+            if (!nodoAux.getElement().isVisited() && e.getElement() < 10) {
+                nodoAux.getElement().setParent(inicio.getElement()); // Declaramos a como el padre del nuevo nodo
+                equipoVertices(graph, nodoAux, fin); // Pasamos el nuevo nodo a una llamada recursiva, para explorar a
+                                                     // traves de este, ya que si no lo hacemos asi­, exploramos la
+                                                     // siguiente arista de a y eso serÃa una busqueda en anchura
+            }
+            // Si esta visitado pero el coste con este camino es mejor (porque hemos llegado
+            // desde un nuevo camino con un coste menor)
+        }
+        return inicio;
     }
 
     /**
-     * El usuario introduce dos personajes por teclado.
-     * Devuelve la lista de personajes que relacionan al primero con el segundo con
-     * un menor peso en cada relacion
-     * El peso de cada relacion debe ser menor que 10 en caso contrario se finaliza
-     * el proceso
-     * mostrando al usuario la imposiblidad de formar equipo
+     * Imprime la ruta desde el nodo inicial hasta el nodo final.
      * 
-     * @param grafo
-     * @param sc
+     * @param inicio El nodo inicial
+     * @param fin    El nodo final
      */
-    private static void diseñarEquipo(Graph grafo, Scanner sc) {
+    private static void recorreCamino(Personaje inicio, Personaje fin) {
+        if (!fin.equals(inicio))
+            recorreCamino(inicio, fin.getParent());
+        System.out.print(fin.getID() + " ");
     }
-
     // #region auxiliar
 
+    /**
+     * Toma un iterador y devuelve una lista.
+     * 
+     * @param iterator el iterador a convertir en una lista
+     * @return Una lista de vértices.
+     */
     private static List<Vertex<Personaje>> iterableToList(Iterator<Vertex<Personaje>> iterator) {
         List<Vertex<Personaje>> list = new ArrayList<>();
         while (iterator.hasNext())
@@ -274,6 +291,12 @@ public class Principal {
         return list;
     }
 
+    /**
+     * Toma un iterador y devuelve una lista del mismo tipo
+     * 
+     * @param iterator el iterador para convertir a una lista
+     * @return Una lista de bordes.
+     */
     private static List<Edge<Integer>> iterableToList2(Iterator<Edge<Integer>> iterator) {
         List<Edge<Integer>> list = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -282,26 +305,13 @@ public class Principal {
         return list;
     }
 
-    /**
-     * Toma un objeto Scanner y un objeto String como parámetros, y devuelve un
-     * objeto String
-     * 
-     * @param sc      Objeto de escáner
-     * @param mensaje El mensaje que se mostrará al usuario.
-     * @return El método está devolviendo el valor de la variable "mensaje"
-     */
-    private static String leerTexto(Scanner sc, String mensaje) {
-        System.out.println(mensaje);
-        return sc.nextLine();
-    }
-
     // #endregion
 
     // #region pruebas
     private static Graph<Personaje, Integer> cargarDatosPruebas() {
         Graph<Personaje, Integer> grafo = new TreeMapGraph<Personaje, Integer>();
         Personaje[] personajes = new Personaje[10];
-        //Personaje pers = new Personaje("l");
+        // Personaje pers = new Personaje("l");
         for (int i = 0; i < 10; i++)
             personajes[i] = new Personaje("" + (char) ('a' + i));
         grafo.insertEdge(personajes[0], personajes[1], 2);
