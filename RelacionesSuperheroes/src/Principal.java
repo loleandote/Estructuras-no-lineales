@@ -12,6 +12,8 @@ public class Principal {
        // Scanner file = new Scanner(new File("marvel-unimodal-edges.csv"));
         //Graph<Personaje, Integer> ge = cargarDatosPruebas();
         Graph<Personaje, Integer> ge=Cargar();
+        System.out.println(ge.areAdjacent(ge.getVertex("Thanos"), ge.getVertex("Iron Man / Tony Stark")));
+        System.out.println("hkolasdfsadf");
         Menu(ge);
     }
 
@@ -46,7 +48,14 @@ public class Principal {
                     sc = new Scanner(System.in);
                     Vertex<Personaje> inicio = obtenerPersonaje(vertices, sc);
                     Vertex<Personaje> fin = obtenerPersonaje(vertices, sc);
-                    camino(g, inicio, fin);
+                    Vertex<Personaje> fin2 = obtenerPersonaje(vertices, sc);
+                    if(camino(g, inicio, fin)&&camino(g, fin, fin2))
+                    {
+                        System.out.print(inicio.getID());
+                        recorreCamino(fin2.getElement());
+                        System.out.println("");
+                    }else
+                    System.out.println("Camino no encontrado");
                     Menu(g);
                     break;
                 case 3:
@@ -56,7 +65,7 @@ public class Principal {
                     fin = obtenerPersonaje(vertices, sc);
                     equipoVertices(g, inicio, fin);
                     if (fin.getElement().getParent() != null) {
-                        recorreCamino(inicio.getElement(), fin.getElement());
+                        recorreCamino(fin.getElement());
                         System.out.println("");
                     } else
                         System.out.println("no se pudo hacer un equipo entre " + inicio.getID() + " y " + fin.getID());
@@ -106,7 +115,6 @@ public class Principal {
                 do {
                     linea = lector.nextLine();
                     String[] splitted = linea.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-
                     g.insertEdge(new Personaje(splitted[0]),new Personaje(splitted[1]),Integer.valueOf(splitted[2]));
                 } while (lector.hasNextLine());
                 lector.close();
@@ -183,18 +191,18 @@ public class Principal {
      * @param inicio El vértice inicial
      * @param fin    El vértice al que queremos llegar
      */
-    private static void camino(Graph<Personaje, Integer> graph, Vertex<Personaje> inicio, Vertex<Personaje> fin) {
+    private static boolean camino(Graph<Personaje, Integer> graph, Vertex<Personaje> inicio, Vertex<Personaje> fin) {
         LinkedList<Vertex<Personaje>> queue = new LinkedList<Vertex<Personaje>>();
         queue.add(inicio);
-        boolean acabar = false;
+        boolean acabar= false;
         do {
             Vertex<Personaje> v = queue.poll();
             Iterator<Edge<Integer>> vertices = graph.incidentEdges(v);
             while (vertices.hasNext() && !acabar) {
                 Vertex<Personaje> adVertex = graph.opposite(v, vertices.next());
                 try {
-                    acabar = adVertex.equals(fin);
-                    if (adVertex.getElement().getParent() == null) {
+                    acabar=adVertex.equals(fin);
+                    if ((adVertex.getElement().getParent() == null)&& !(adVertex.equals(inicio))) {
                         queue.add(adVertex);
                         adVertex.getElement().setParent(v.getElement());
                     }
@@ -202,12 +210,9 @@ public class Principal {
                 }
             }
         } while (fin.getElement().getParent() == null && !queue.isEmpty() && !acabar);
-        if (acabar) {
-            System.out.print(inicio.getID());
-            recorreCamino(inicio.getElement(), fin.getElement());
-            System.out.println(); 
-        } else
-            System.out.println("no se pudo encontrar un camino entre los dos personajes");
+        
+
+            return acabar;
     }
 
     /**
@@ -247,11 +252,17 @@ public class Principal {
      * @param inicio El nodo inicial
      * @param fin    El nodo final
      */
-    private static void recorreCamino(Personaje inicio, Personaje fin) {
-        if (!fin.equals(inicio)){
-            recorreCamino(inicio, fin.getParent());
-        System.out.print(" -> "+fin.getID());
+    private static void recorreCamino( Personaje fin) {
+
+        if (fin.getParent()!=null){
+            
+            Personaje cosa= fin.getParent();
+            recorreCamino(cosa);
+            System.out.print(" -> "+fin.getID());
         }
+       
+        //else
+        //return;
     }
     // #region auxiliar
 
