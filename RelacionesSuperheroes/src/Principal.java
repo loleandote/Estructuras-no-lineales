@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -7,7 +9,9 @@ import Grafo.*;
 public class Principal {
     public static void main(String[] args) throws Exception {
         // Cargando los datos del archivo e imprimiendo el ID de cada vértice.
-        Graph<Personaje, Integer> ge = cargarDatosPruebas();
+       // Scanner file = new Scanner(new File("marvel-unimodal-edges.csv"));
+        //Graph<Personaje, Integer> ge = cargarDatosPruebas();
+        Graph<Personaje, Integer> ge=Cargar();
         Menu(ge);
     }
 
@@ -51,7 +55,7 @@ public class Principal {
                     inicio = obtenerPersonaje(vertices, sc);
                     fin = obtenerPersonaje(vertices, sc);
                     equipoVertices(g, inicio, fin);
-                    if (g.getVertex("h").getElement().getParent() != null) {
+                    if (fin.getElement().getParent() != null) {
                         recorreCamino(inicio.getElement(), fin.getElement());
                         System.out.println("");
                     } else
@@ -66,13 +70,10 @@ public class Principal {
                     System.out.println("Opcion no valida: " + opcion);
             }
         } catch (InputMismatchException e) {
-            System.err.println(e);
-        } finally {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            //System.err.println(e);
+            System.out.println("Opcion no valida: ");
+            Menu(g);
+
         }
     }
 
@@ -91,57 +92,31 @@ public class Principal {
      * 
      * @return Un gráfico con los vértices y las aristas del gráfico.
      */
-    private static Graph<Personaje, Integer> Cargar() {
-        Graph<Personaje, Integer> g = new TreeMapGraph<>();
+    public static Graph<Personaje,Integer> Cargar() throws IOException { // Metodo lectura CSV
+            /**
+             * Primero, leeremos los registros por línea usando readLine() en BufferReader.
+             * A continuación, dividiremos la linea en tokens según el delimitador coma.
+             */
 
-        return g;
+             Graph<Personaje, Integer> g = new TreeMapGraph<Personaje,Integer>();
+            try {
+               // FileReader ficheroCSV = new FileReader("marvel-unimodal-edges.csv"); // Ruta en el sistema del fichero de datos
+               Scanner lector = new Scanner(new File("marvel-unimodal-edges.csv")); // Buffer de entrada
+                String linea = lector.nextLine(); // Inicio de la lectura del fichero
+                do {
+                    linea = lector.nextLine();
+                    String[] splitted = linea.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+
+                    g.insertEdge(new Personaje(splitted[0]),new Personaje(splitted[1]),Integer.valueOf(splitted[2]));
+                } while (lector.hasNextLine());
+                lector.close();
+                return g; // Devolvemos el array con todos los heroes encontrados y sus datos.
+            } catch (IOException ex) {
+                //FicheroNoEncontrado();
+                System.exit(1);
+                return null;
+            } 
     }
-
-    /**
-     * Leer fichero. Este método lee el archivo y crea un gráfico con los nombres
-     * como vértice y el peso.
-     */
-    /*
-     * public static void leerFichero() {
-     * String linea;
-     * boolean seguir = true;
-     * Scanner entrada = null;
-     * Personaje p1;
-     * Personaje p2;
-     * Interaccion i1;
-     * 
-     * try {
-     * entrada = new Scanner(new FileReader("marvel-unimodal-edges.csv"));
-     * } catch(FileNotFoundException fne) {
-     * System.out.println("No se ha podido leer el archivo");
-     * seguir = false;
-     * }
-     * 
-     * entrada.nextLine(); // Salta la primera línea
-     * if(seguir) {
-     * while(entrada.hasNextLine()) {
-     * linea = entrada.nextLine();
-     * StringTokenizer to = new StringTokenizer(linea, ",");
-     * p1 = new Personaje<String>(to.nextToken());
-     * p2 = new Personaje<String>(to.nextToken());
-     * i1 = new Interaccion<Integer>(p1.getID()+"_"+p2.getID(),
-     * Integer.parseInt(to.nextToken()));
-     * DecoratedElement<Personaje<String>> d1 = new
-     * DecoratedElement<Personaje<String>>(p1.getID(), p1);
-     * DecoratedElement<Personaje<String>> d2 = new
-     * DecoratedElement<Personaje<String>>(p2.getID(), p2);
-     * 
-     * t.insertEdge(d1, d2, i1);
-     * 
-     * if(to.hasMoreTokens())
-     * to.nextToken();
-     * 
-     * }
-     * entrada.close();
-     * }
-     * 
-     * }
-     */
 
     private static void MostrarDatos(Graph<Personaje, Integer> g) {
         System.out.println("Numero de personajes:" + g.getN());
@@ -228,8 +203,9 @@ public class Principal {
             }
         } while (fin.getElement().getParent() == null && !queue.isEmpty() && !acabar);
         if (acabar) {
+            System.out.print(inicio.getID());
             recorreCamino(inicio.getElement(), fin.getElement());
-            // System.out.println(fin.getID());
+            System.out.println(); 
         } else
             System.out.println("no se pudo encontrar un camino entre los dos personajes");
     }
@@ -272,9 +248,10 @@ public class Principal {
      * @param fin    El nodo final
      */
     private static void recorreCamino(Personaje inicio, Personaje fin) {
-        if (!fin.equals(inicio))
+        if (!fin.equals(inicio)){
             recorreCamino(inicio, fin.getParent());
-        System.out.print(fin.getID() + " ");
+        System.out.print(" -> "+fin.getID());
+        }
     }
     // #region auxiliar
 
